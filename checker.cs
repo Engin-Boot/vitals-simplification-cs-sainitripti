@@ -82,6 +82,11 @@ class Checker
     static int Main() {
         ExpectTrue(vitalsAreOk(new float[]{ 100, 95, 60}));
         ExpectFalse(vitalsAreOk(new float[]{ 40, 91, 92 }));
+
+        ExpectTrue(vitalIsOk(110, vitalLimit[(int)Vital.BPM]));
+        ExpectFalse(vitalIsOk(80, vitalLimit[(int)Vital.SPO2]));
+        ExpectFalse(vitalIsOk(100, vitalLimit[(int)Vital.RESPRATE]));
+
         Console.WriteLine("All ok");
         return 0;
     }
