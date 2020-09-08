@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-enum Vital
+enum VitalList
 {
     BPM,
     SPO2,
@@ -9,58 +9,67 @@ enum Vital
     VITALCOUNT
 };
 
-struct Limit
+struct Vital
 {
+    string name;
     int lowerLimit;
     int upperLimit;
 
-    public Limit(int lowerLimit, int upperLimit)
+    public Vital(string name, int lowerLimit, int upperLimit)
     {
+        this.name = name;
         this.lowerLimit = lowerLimit;
         this.upperLimit = upperLimit;
+    }
+
+    public string Name
+    {
+        get { return name; }
     }
 
     public int LowerLimit
     {
         get { return lowerLimit; }
-        set { lowerLimit = value; }
     }
 
     public int UpperLimit
     {
         get { return upperLimit; }
-        set { upperLimit = value; }
     }
 }
 
 class Checker
 {
-    static Limit[] vitalLimit;
+    static Vital[] vitals;
 
     static Checker()
     {
-        vitalLimit = new Limit[(int)Vital.VITALCOUNT];
-
-        vitalLimit[(int)Vital.BPM] = new Limit(70, 150);
-        vitalLimit[(int)Vital.SPO2] = new Limit(90, 100);
-        vitalLimit[(int)Vital.RESPRATE] = new Limit(30, 95);
+        vitals = new Vital[(int)VitalList.VITALCOUNT] {
+            new Vital("BPM", 70, 150),
+            new Vital("SPO2", 90, 100),
+            new Vital("RESPRATE", 30, 95) };
     }
 
-    static bool vitalIsOk(float value, Limit limit)
+    static bool vitalIsOk(float value, Vital vital)
     {
-        if(value < limit.LowerLimit || value > limit.UpperLimit)
+        if(value < vital.LowerLimit)
         {
+            Console.WriteLine(vital.Name + " is low!");
             return false;
+        }
+        else if (value > vital.UpperLimit)
+        {
+            Console.WriteLine(vital.Name + "is high!");
         }
         return true;
     }
-    static bool vitalsAreOk(float[] vitalValue) {
+    static bool vitalsAreOk(float[] values) {
         
         bool allVitalAreOk = true;
 
-        for(int i = 0; i < vitalValue.Length; i++)
+        for(int i = 0; i < values.Length; i++)
         {
-            if(!vitalIsOk(vitalValue[i], vitalLimit[i]))
+            if(!vitalIsOk(values[i], vitals[i]))
             {
                 allVitalAreOk = false;
             }
@@ -83,9 +92,9 @@ class Checker
         ExpectTrue(vitalsAreOk(new float[]{ 100, 95, 60}));
         ExpectFalse(vitalsAreOk(new float[]{ 40, 91, 92 }));
 
-        ExpectTrue(vitalIsOk(110, vitalLimit[(int)Vital.BPM]));
-        ExpectFalse(vitalIsOk(80, vitalLimit[(int)Vital.SPO2]));
-        ExpectFalse(vitalIsOk(100, vitalLimit[(int)Vital.RESPRATE]));
+        ExpectTrue(vitalIsOk(110, vitals[(int)VitalList.BPM]));
+        ExpectFalse(vitalIsOk(80, vitals[(int)VitalList.SPO2]));
+        ExpectFalse(vitalIsOk(100, vitals[(int)VitalList.RESPRATE]));
 
         Console.WriteLine("All ok");
         return 0;
